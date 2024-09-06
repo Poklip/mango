@@ -3,13 +3,16 @@ package ru.kvs.mangomsngr.data.user
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import ru.kvs.mangomsngr.models.user.ProfileChangedResponse
 import ru.kvs.mangomsngr.models.user.CheckAuthBody
 import ru.kvs.mangomsngr.models.user.CheckAuthResponse
 import ru.kvs.mangomsngr.models.user.Profile
+import ru.kvs.mangomsngr.models.user.ProfileChangedResponse
 import ru.kvs.mangomsngr.models.user.ProfileToChangeBody
+import ru.kvs.mangomsngr.models.user.RefreshToken
+import ru.kvs.mangomsngr.models.user.RefreshedToken
 import ru.kvs.mangomsngr.models.user.RegistrationBody
 import ru.kvs.mangomsngr.models.user.RegistrationResponse
 import ru.kvs.mangomsngr.models.user.SendAuthBody
@@ -33,10 +36,24 @@ interface UserService {
     ): Response<RegistrationResponse>
 
     @GET("api/v1/users/me")
-    suspend fun getUserData(): Response<Profile>
+    suspend fun getUserData(
+        @Header("Authorization") accessToken: String
+    ): Response<Profile>
 
     @PUT("api/v1/users/me")
     suspend fun changeUserData(
+        @Header("Authorization") accessToken: String,
         @Body body: ProfileToChangeBody
     ): Response<ProfileChangedResponse>
+
+    @POST("api/v1/users/refresh-token")
+    suspend fun refreshToken(
+        @Header("Authorization") accessToken: String,
+        @Body body: RefreshToken
+    ): Response<RefreshedToken>
+
+    @GET("api/v1/users/check-jwt")
+    suspend fun checkJwt(
+        @Header("Authorization") accessToken: String,
+    ): Response<String>
 }

@@ -1,5 +1,6 @@
 package ru.kvs.mangomsngr.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -19,6 +20,7 @@ class EnterViewModel @Inject constructor(private val repository: UserRepo) : Vie
         return liveData {
             val sendAuthResponse =
                 repository.sendAuth(phoneNumberForCode = SendAuthBody(phoneNumber = phoneNumber))
+            Log.d("KVS_DEBUG", sendAuthResponse.body().toString())
             sendAuthResponse.body()?.let { emit(it.isSuccess) }
         }
     }

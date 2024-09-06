@@ -25,4 +25,8 @@ class UserRepo @Inject constructor(private val userRemoteData: UserRemoteData) {
     suspend fun changeUserData(dataToRefresh: ProfileToChangeBody) =
         userRemoteData.changeUserProfile(dataToRefresh = dataToRefresh)
 
+    suspend fun refreshToken() = userRemoteData.refreshAccessToken()
+
+    suspend fun checkJwt() = userRemoteData.checkJwt()
+
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.kvs.mangomsngr.data.user.UserRepo
+import ru.kvs.mangomsngr.data.remote.user.UserRepo
 import ru.kvs.mangomsngr.models.user.CheckAuthBody
 import ru.kvs.mangomsngr.models.user.CheckAuthResponse
 import ru.kvs.mangomsngr.models.user.RegistrationBody

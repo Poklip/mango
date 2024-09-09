@@ -1,4 +1,4 @@
-package ru.kvs.mangomsngr.data.user
+package ru.kvs.mangomsngr.data.remote.user
 
 import android.util.Log
 import retrofit2.Response

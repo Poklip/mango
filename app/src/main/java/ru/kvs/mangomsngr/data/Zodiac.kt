@@ -16,3 +16,46 @@ enum class Zodiac(val image: Int, val dates: Pair<Int, Int>) {
     Archer(R.drawable.archer, 1123 to 1222),
     SeaGoat(R.drawable.sea_goat, 1223 to 120)
 }
+
+fun getZodiac(birthday: String?) : Zodiac? {
+    if (birthday.isNullOrEmpty()) return null
+    val dateAsInteger = try {
+        birthday
+            .substringBeforeLast('.')
+            .replace(".", "")
+            .toInt()
+    } catch (e: NumberFormatException) {
+        return null
+    }
+    if (dateAsInteger.isIntegerBetweenBorders(Zodiac.WaterBearer.dates)) {
+        return Zodiac.WaterBearer
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Fishes.dates)) {
+        return Zodiac.Fishes
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Ram.dates)) {
+        return Zodiac.Ram
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Bull.dates)) {
+        return Zodiac.Bull
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Twins.dates)) {
+        return Zodiac.Twins
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Crab.dates)) {
+        return Zodiac.Crab
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Lion.dates)) {
+        return Zodiac.Lion
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Maiden.dates)) {
+        return Zodiac.Maiden
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Scales.dates)) {
+        return Zodiac.Scales
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Scorpion.dates)) {
+        return Zodiac.Scorpion
+    } else if (dateAsInteger.isIntegerBetweenBorders(Zodiac.Archer.dates)) {
+        return Zodiac.Archer
+    } else if (Zodiac.SeaGoat.dates.first >= dateAsInteger || Zodiac.SeaGoat.dates.second <= dateAsInteger) {
+        return Zodiac.SeaGoat
+    } else {
+        return null
+    }
+}
+
+fun Int.isIntegerBetweenBorders(borders: Pair<Int, Int>): Boolean {
+    return borders.first <= this && this <= borders.second
+}

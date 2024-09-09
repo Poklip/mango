@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.ext.MaskVisualTransformation
@@ -67,7 +69,7 @@ fun EditContainer(viewModel: ProfileViewModel, owner: ComponentActivity) {
         var status by remember { mutableStateOf("") }
         Button(
             onClick = {
-                //TODO() камера
+                //TODO() галерея
             }
         ) {
             Image(
@@ -84,7 +86,7 @@ fun EditContainer(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
-            value = "",
+            value = name,
             placeholder = { Text (text = profileData?.name ?: "name") },
             onValueChange = { enteredValue ->
                 name = enteredValue
@@ -100,12 +102,26 @@ fun EditContainer(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
-            value = "",
+            value = status,
             placeholder = { Text (text = profileData?.status ?: "name") },
             onValueChange = { enteredValue ->
                 status = enteredValue
             },
             modifier = Modifier.background(Color.LightGray),
         )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            onClick = {
+
+            },
+            colors = ButtonColors(
+                containerColor = Color.LightGray,
+                contentColor = Color.Black,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.Transparent
+            )
+        ) {
+            Text(text = "Save")
+        }
     }
 }

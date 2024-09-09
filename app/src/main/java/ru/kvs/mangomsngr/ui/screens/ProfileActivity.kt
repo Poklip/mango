@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.R
+import ru.kvs.mangomsngr.data.getZodiac
 import ru.kvs.mangomsngr.models.user.ProfileData
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.ProfileViewModel
@@ -76,12 +79,14 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
             Icon(painterResource(R.drawable.baseline_edit_24), contentDescription = "edit button")
         }
         Spacer(modifier = Modifier.height(10.dp))
+
         Image(
             painter = rememberAsyncImagePainter("${profileData?.avatar}"),
             contentDescription = "avatar",
             modifier = Modifier.size(128.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = "${profileData?.phoneNumber}", modifier = Modifier
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -90,15 +95,16 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = "${profileData?.username}", modifier = Modifier
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
                 .fillMaxWidth(0.5f)
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
-
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = "${profileData?.city}", modifier = Modifier
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -108,6 +114,7 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
 
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = "${profileData?.birthday}", modifier = Modifier
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -116,6 +123,7 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -124,23 +132,39 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 .background(Color.LightGray)
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
         ) {
-            Image(
-                painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = "zodiac image",
-                modifier = Modifier.size(20.dp)
+            Icon(
+                painterResource(getZodiac(profileData?.birthday)?.image ?: R.drawable.ic_launcher_foreground),
+                contentDescription = "zodiac icon"
             )
             Text(
-                text = "zodiac", modifier = Modifier
+                text = getZodiac(profileData?.birthday)?.name ?: "-", modifier = Modifier
                     .padding(10.dp, 0.dp, 10.dp, 0.dp)
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
-            text = "\tstatusjkfsgnsdf gnldfhgvms;dfgvlkmsfmh gslkfgsidhmvlefgv,lkfgn", modifier = Modifier
+            text = profileData?.status.toString(), modifier = Modifier
                 .clip(shape = RoundedCornerShape(5.dp))
                 .background(Color.LightGray)
                 .fillMaxWidth(0.5f)
                 .padding(5.dp)
         )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = {
+                val intent = Intent(owner, ChatsActivity::class.java)
+                owner.startActivity(intent)
+            },
+            colors = ButtonColors(
+                containerColor = Color.Red,
+                contentColor = Color.Red,
+                disabledContainerColor = Color.Red,
+                disabledContentColor = Color.Red
+            )
+        ) {
+            Text(text = "Back", color = Color.White)
+        }
     }
 }

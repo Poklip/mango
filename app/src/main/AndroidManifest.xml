@@ -26,6 +26,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.screens.RegistrationActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.ProfileActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.EditProfileActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.ChatsActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

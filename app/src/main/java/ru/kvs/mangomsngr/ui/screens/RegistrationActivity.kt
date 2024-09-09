@@ -81,17 +81,18 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
             ),
             value = name,
             onValueChange = { newName ->
-                if (name.contains(Regex("fuck|Fuck|cunt|Cunt|nigger|Nigger|bitch|Bitch|Whore|whore"))) {
-                    name = "mind your manners"
+                if (!name.contains(Regex("fuck|Fuck|cunt|Cunt|nigger|Nigger|bitch|Bitch|Whore|whore"))) {
+                    name = newName
                 }
-                name = newName
             },
+            placeholder = {Text(text = "enter name")},
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
                 .height(50.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            singleLine = true,
         )
         Spacer(modifier = Modifier.height(5.dp))
 
@@ -108,19 +109,24 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
                 isUsernameLegit = newUsername.contains(Regex("[a-zA-Z0-9-_]"))
                 username = newUsername
             },
+            placeholder = {Text(text = "enter username")},
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
                 .height(50.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            singleLine = true,
         )
         Spacer(modifier = Modifier.height(5.dp))
         Button(
             onClick = {
                 if(isUsernameLegit && username.isNotEmpty() && name.isNotEmpty()) {
                     viewModel.registerNewUser(phoneNumber = phoneNumber, name = name, username = username).observe(owner) { response ->
-                        //TODO() сохранить всё
+                        viewModel.saveTokens(
+                            accessToken = response.accessToken ?: "",
+                            refreshToken = response.refreshToken ?: ""
+                        )
                         val chatIntent = Intent(owner, ChatsActivity::class.java)
                         owner.startActivity(chatIntent)
                     }
@@ -133,7 +139,7 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
                 disabledContentColor = Color.Transparent
             )
         ) {
-            Text(text = "Send code")
+            Text(text = "Sign up")
         }
     }
 }
@@ -141,6 +147,6 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
 @Composable
 fun PhoneNumber(phoneNumber: String) {
     Text(
-        text = phoneNumber
+        text = "+$phoneNumber"
     )
 }

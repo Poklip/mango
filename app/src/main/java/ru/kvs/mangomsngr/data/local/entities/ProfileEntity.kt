@@ -1,7 +1,8 @@
-package ru.kvs.mangomsngr.data.local.user
+package ru.kvs.mangomsngr.data.local.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import ru.kvs.mangomsngr.models.user.AvatarExtended
 import ru.kvs.mangomsngr.models.user.ProfileData
 
@@ -14,6 +15,7 @@ data class ProfileEntity(
     @ColumnInfo("vk") val vk: String?,
     @ColumnInfo("instagram") val instagram: String?,
     @ColumnInfo("status") val status: String?,
+    @PrimaryKey
     @ColumnInfo("id") val userId: Int,
     @ColumnInfo("last") val lastSeen: String?,
     @ColumnInfo("online") val isOnline: Boolean,

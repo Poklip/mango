@@ -14,7 +14,6 @@ import ru.kvs.mangomsngr.data.local.DB_NAME
 import ru.kvs.mangomsngr.data.remote.user.UserRemoteData
 import ru.kvs.mangomsngr.data.remote.user.UserService
 import javax.inject.Singleton
-import kotlin.coroutines.coroutineContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,5 +51,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideYourDao(database: AppDatabase) = database.getProfileDao()
+    fun provideAppDBDao(database: AppDatabase) = database.getDao()
+
 }

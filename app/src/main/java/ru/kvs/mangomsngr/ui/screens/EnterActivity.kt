@@ -183,8 +183,12 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
             Button(
                 onClick = {
                     if(code.isDigitsOnly() && code.length == 6) {
-                        viewModel.checkAuth(phoneNumber = phoneNumber, code = code).observe(owner) { answer ->
-                            if (answer.isUserExists) {
+                        viewModel.checkAuth(phoneNumber = phoneNumber, code = code).observe(owner) { response ->
+                            if (response.isUserExists) {
+                                viewModel.saveTokens(
+                                    accessToken = response.accessToken ?: "",
+                                    refreshToken = response.refreshToken ?: ""
+                                )
                                 //TODO() к чатам
                             } else {
                                 val regIntent = Intent(owner, RegistrationActivity::class.java)

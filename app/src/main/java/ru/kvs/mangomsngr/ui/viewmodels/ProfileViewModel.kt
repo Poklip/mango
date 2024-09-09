@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.kvs.mangomsngr.data.local.user.ProfileRepo
 import ru.kvs.mangomsngr.data.remote.user.UserRepo
 import ru.kvs.mangomsngr.models.user.AvatarExtended
-import ru.kvs.mangomsngr.models.user.Profile
 import ru.kvs.mangomsngr.models.user.ProfileData
 import ru.kvs.mangomsngr.models.user.ProfileToChangeBody
 import javax.inject.Inject

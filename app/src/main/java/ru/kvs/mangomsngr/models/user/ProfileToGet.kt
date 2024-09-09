@@ -1,7 +1,7 @@
 package ru.kvs.mangomsngr.models.user
 
 import com.google.gson.annotations.SerializedName
-import ru.kvs.mangomsngr.data.local.user.ProfileEntity
+import ru.kvs.mangomsngr.data.local.entities.ProfileEntity
 
 data class Profile(
     @SerializedName("profile_data") val profileData: ProfileData,

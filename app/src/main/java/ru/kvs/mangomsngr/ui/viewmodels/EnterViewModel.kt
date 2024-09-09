@@ -5,6 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ru.kvs.mangomsngr.data.local.user.ProfileRepo
 import ru.kvs.mangomsngr.data.remote.user.UserRepo
 import ru.kvs.mangomsngr.models.user.CheckAuthBody
 import ru.kvs.mangomsngr.models.user.CheckAuthResponse
@@ -14,7 +18,9 @@ import ru.kvs.mangomsngr.models.user.SendAuthBody
 import javax.inject.Inject
 
 @HiltViewModel
-class EnterViewModel @Inject constructor(private val repository: UserRepo) : ViewModel() {
+class EnterViewModel @Inject constructor(private val repository: UserRepo, private val localRepo: ProfileRepo) : ViewModel() {
+
+    private val dbScope = CoroutineScope(Dispatchers.IO)
 
     fun sendAuth(phoneNumber: String): LiveData<Boolean> {
         return liveData {
@@ -51,6 +57,15 @@ class EnterViewModel @Inject constructor(private val repository: UserRepo) : Vie
                 )
             )
             registerResponse.body()?.let { emit(it) }
+        }
+    }
+
+    fun saveTokens(
+        accessToken: String,
+        refreshToken: String
+    ) {
+        dbScope.launch {
+            localRepo.saveTokens(accessToken, refreshToken)
         }
     }
 }

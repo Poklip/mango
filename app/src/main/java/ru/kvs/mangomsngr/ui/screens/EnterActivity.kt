@@ -1,10 +1,13 @@
-package ru.kvs.mangomsngr
+package ru.kvs.mangomsngr.ui.screens
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,16 +16,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -37,12 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.LifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
+import ru.kvs.mangomsngr.data.Countries
+import ru.kvs.mangomsngr.ext.MaskVisualTransformation
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.EnterViewModel
 
@@ -50,20 +51,29 @@ import ru.kvs.mangomsngr.ui.viewmodels.EnterViewModel
 class AuthActivity : ComponentActivity() {
 
     private val viewModel by viewModels<EnterViewModel>()
+    private val countriesLists = listOf(
+        Countries.Russia,
+        Countries.Belarus,
+        Countries.Georgia,
+        Countries.Azerbaijan,
+        Countries.Kyrgyzstan,
+        Countries.Uzbekistan,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MangoMsngrTheme {
-                MainContainer(viewModel, this)
+                MainContainer(viewModel, this, countriesLists)
             }
+
         }
     }
 }
 
 @Composable
-fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
+fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries: List<Countries>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -73,7 +83,8 @@ fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
     ) {
         var isWaitingForCode by remember { mutableStateOf(false) }
         var phoneNumber by rememberSaveable { mutableStateOf("") }
-        var code by rememberSaveable { mutableStateOf("") }
+        var code by remember { mutableStateOf("") }
+        var chosenCountry by remember { mutableStateOf(countries.first()) }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -84,15 +95,23 @@ fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
                 .height(50.dp)
         ) {
             var expanded by remember { mutableStateOf(false) }
+
             IconButton(onClick = { expanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Show countries")
+                Image(painterResource(chosenCountry.flag), contentDescription = "countries")
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                repeat(5) {
-                    Text("Скопировать", fontSize = 18.sp, modifier = Modifier.padding(10.dp))
+                HorizontalDivider()
+                for (country in countries) {
+                    IconButton(onClick = {
+                        chosenCountry = country
+                        phoneNumber = ""
+                        expanded = false
+                    }) {
+                        Image(painterResource(country.flag), "country")
+                    }
                     HorizontalDivider()
                 }
             }
@@ -105,15 +124,20 @@ fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
                     disabledIndicatorColor = Color.Transparent
                 ),
                 value = phoneNumber,
-                placeholder = { Text (text = "enter phone number")},
-                onValueChange = { newNumber ->
-                    phoneNumber = newNumber
+                placeholder = { Text (text = chosenCountry.phoneNumberMask)},
+                onValueChange = { enteredValue ->
+                    phoneNumber = enteredValue.filter { it.isDigit() || it.code == 43 }
+                    chosenCountry =
+                        countries.firstOrNull { country -> country.phoneNumberCode == enteredValue } ?: chosenCountry
                 },
                 modifier = Modifier.background(Color.LightGray),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                visualTransformation = MaskVisualTransformation(mask = chosenCountry.phoneNumberMask),
+                readOnly = isWaitingForCode
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
+
         if (isWaitingForCode) {
             TextField(
                 colors = TextFieldDefaults.colors(
@@ -136,10 +160,10 @@ fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
             )
             Spacer(modifier = Modifier.height(5.dp))
         }
+
         Button(
             onClick = {
-                //TODO() таймер на кнопку, чтобы не спамили
-                if(phoneNumber.isDigitsOnly()) {
+                if(phoneNumber.isDigitsOnly() && phoneNumber.length >= 11) {
                     viewModel.sendAuth(phoneNumber = phoneNumber).observe(owner) { isSuccess ->
                         isWaitingForCode = isSuccess
                     }
@@ -163,7 +187,9 @@ fun MainContainer(viewModel: EnterViewModel, owner: LifecycleOwner) {
                             if (answer.isUserExists) {
                                 //TODO() к чатам
                             } else {
-                                //TODO() к регистрации
+                                val regIntent = Intent(owner, RegistrationActivity::class.java)
+                                regIntent.putExtra("phoneNumber", phoneNumber)
+                                owner.startActivity(regIntent)
                             }
                         }
                     }

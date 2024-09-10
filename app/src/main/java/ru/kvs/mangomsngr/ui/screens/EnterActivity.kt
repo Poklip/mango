@@ -1,6 +1,5 @@
 package ru.kvs.mangomsngr.ui.screens
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.data.Countries
 import ru.kvs.mangomsngr.ext.MaskVisualTransformation
@@ -67,7 +66,6 @@ class AuthActivity : ComponentActivity() {
             MangoMsngrTheme {
                 MainContainer(viewModel, this, countriesLists)
             }
-
         }
     }
 }
@@ -92,6 +90,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                 .fillMaxWidth(0.7f)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                 .height(50.dp)
         ) {
             var expanded by remember { mutableStateOf(false) }
@@ -124,11 +123,12 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                     disabledIndicatorColor = Color.Transparent
                 ),
                 value = phoneNumber,
-                placeholder = { Text (text = chosenCountry.phoneNumberMask)},
+                placeholder = { Text(text = chosenCountry.phoneNumberMask) },
                 onValueChange = { enteredValue ->
                     phoneNumber = enteredValue.filter { it.isDigit() || it.code == 43 }
                     chosenCountry =
-                        countries.firstOrNull { country -> country.phoneNumberCode == enteredValue } ?: chosenCountry
+                        countries.firstOrNull { country -> country.phoneNumberCode == enteredValue }
+                            ?: chosenCountry
                 },
                 modifier = Modifier.background(Color.LightGray),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -155,6 +155,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                     .fillMaxWidth(0.19f)
                     .clip(shape = RoundedCornerShape(20.dp))
                     .background(Color.LightGray)
+                    .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                     .height(50.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
             )
@@ -163,7 +164,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
 
         Button(
             onClick = {
-                if(phoneNumber.isDigitsOnly() && phoneNumber.length >= 11) {
+                if (phoneNumber.isDigitsOnly() && phoneNumber.length >= 11) {
                     viewModel.sendAuth(phoneNumber = phoneNumber).observe(owner) { isSuccess ->
                         isWaitingForCode = isSuccess
                     }
@@ -182,27 +183,28 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
         if (isWaitingForCode) {
             Button(
                 onClick = {
-                    if(code.isDigitsOnly() && code.length == 6) {
-                        viewModel.checkAuth(phoneNumber = phoneNumber, code = code).observe(owner) { response ->
-                            if (response.isUserExists) {
-                                viewModel.saveTokens(
-                                    accessToken = response.accessToken ?: "",
-                                    refreshToken = response.refreshToken ?: ""
-                                )
-                                //TODO() к чатам
-                            } else {
-                                val regIntent = Intent(owner, RegistrationActivity::class.java)
-                                regIntent.putExtra("phoneNumber", phoneNumber)
-                                owner.startActivity(regIntent)
+                    if (code.isDigitsOnly() && code.length == 6) {
+                        viewModel.checkAuth(phoneNumber = phoneNumber, code = code)
+                            .observe(owner) { response ->
+                                if (response.isUserExists) {
+                                    viewModel.saveTokens(
+                                        accessToken = response.accessToken ?: "",
+                                        refreshToken = response.refreshToken ?: ""
+                                    )
+                                    //TODO() к чатам
+                                } else {
+                                    val regIntent = Intent(owner, RegistrationActivity::class.java)
+                                    regIntent.putExtra("phoneNumber", phoneNumber)
+                                    owner.startActivity(regIntent)
+                                }
                             }
-                        }
                     }
                 },
                 colors = ButtonColors(
                     containerColor = Color.LightGray,
                     contentColor = Color.Black,
                     disabledContainerColor = Color.Transparent,
-                    disabledContentColor = Color.Transparent
+                    disabledContentColor = Color.Transparent,
                 )
             ) {
                 Text(text = "Sign in")

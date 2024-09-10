@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -81,48 +82,16 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Image(
-            painter = rememberAsyncImagePainter("${profileData?.avatar}"),
+            painter = rememberAsyncImagePainter(profileData?.avatar),
             contentDescription = "avatar",
             modifier = Modifier.size(128.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = "${profileData?.phoneNumber}", modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
-                .fillMaxWidth(0.5f)
-                .padding(10.dp, 2.dp, 10.dp, 2.dp)
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "${profileData?.username}", modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
-                .fillMaxWidth(0.5f)
-                .padding(10.dp, 2.dp, 10.dp, 2.dp)
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "${profileData?.city}", modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
-                .fillMaxWidth(0.5f)
-                .padding(10.dp, 2.dp, 10.dp, 2.dp)
-
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "${profileData?.birthday}", modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
-                .fillMaxWidth(0.5f)
-                .padding(10.dp, 2.dp, 10.dp, 2.dp)
-        )
-        Spacer(modifier = Modifier.height(10.dp))
+        val fields = listOf("phoneNumber", "username", "city", "birthday")
+        for (field in fields) {
+            Field(fieldName = field, profileData = profileData)
+        }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -130,6 +99,7 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 .fillMaxWidth(0.5f)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
         ) {
             Icon(
@@ -167,4 +137,17 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
             Text(text = "Back", color = Color.White)
         }
     }
+}
+
+@Composable
+fun Field(fieldName: String, profileData: ProfileData?) {
+    Text(
+        text = profileData?.getThisField(fieldName) ?: fieldName, modifier = Modifier
+            .clip(shape = RoundedCornerShape(20.dp))
+            .background(Color.LightGray)
+            .fillMaxWidth(0.5f)
+            .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
+            .padding(10.dp, 2.dp, 10.dp, 2.dp)
+    )
+    Spacer(modifier = Modifier.height(10.dp))
 }

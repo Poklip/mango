@@ -4,15 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.kvs.mangomsngr.data.local.user.ProfileRepo
 import ru.kvs.mangomsngr.data.remote.user.UserRepo
 import ru.kvs.mangomsngr.models.user.AvatarExtended
 import ru.kvs.mangomsngr.models.user.ProfileData
-import ru.kvs.mangomsngr.models.user.ProfileToChangeBody
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(private val remoteRepo: UserRepo, private val localRepo: ProfileRepo) : ViewModel() {
+
+    private val dbScope = CoroutineScope(Dispatchers.IO)
 
     fun getUserDataRemote(): LiveData<ProfileData?> {
         return liveData {
@@ -21,8 +25,12 @@ class ProfileViewModel @Inject constructor(private val remoteRepo: UserRepo, pri
         }
     }
 
-    fun changeUserData(dataToRefresh: ProfileToChangeBody): LiveData<AvatarExtended?> {
+    fun changeUserDataOnService(): LiveData<AvatarExtended?> {
         return liveData {
+            val dataToRefresh = localRepo
+                .getProfile()
+                ?.toSendToService()
+                ?: return@liveData
             val userDataRefreshedResponse = remoteRepo.changeUserData(dataToRefresh = dataToRefresh)
             userDataRefreshedResponse.body()?.let { emit(it.avatars) }
         }
@@ -31,6 +39,13 @@ class ProfileViewModel @Inject constructor(private val remoteRepo: UserRepo, pri
     fun getUserDataLocal(): LiveData<ProfileData?> {
         return liveData {
             emit(localRepo.getProfile())
+        }
+    }
+
+    fun saveUserData(profileData: ProfileData?) {
+        if (profileData == null) return
+        dbScope.launch {
+            localRepo.saveProfile(profileData)
         }
     }
 }

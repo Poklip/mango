@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +69,7 @@ fun EditContainer(viewModel: ProfileViewModel, owner: ComponentActivity) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var profileData by rememberSaveable { mutableStateOf<ProfileData?>(null) }
+        var profileData: ProfileData? = null
         viewModel.getUserDataLocal().observe(owner) { response ->
             profileData = response
         }
@@ -118,7 +117,7 @@ fun EditContainer(viewModel: ProfileViewModel, owner: ComponentActivity) {
 @Composable
 fun EditableField(fieldName: String, profileDataFromResponse: ProfileData?, viewModel: ProfileViewModel) {
     var currentField by remember { mutableStateOf(fieldName)}
-    var profileData by rememberSaveable { mutableStateOf(profileDataFromResponse) }
+    var profileData = profileDataFromResponse
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

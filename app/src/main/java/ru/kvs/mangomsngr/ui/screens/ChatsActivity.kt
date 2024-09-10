@@ -2,7 +2,10 @@ package ru.kvs.mangomsngr.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.Window
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -33,6 +36,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,17 +58,32 @@ class ChatsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideUI(window)
         enableEdgeToEdge()
         setContent {
             MangoMsngrTheme {
-                ChatsContainer(this)
+                ChatsContainer(this, viewModel)
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                hideUI(window)
+                return
+            }
+        })
     }
 }
 
+private fun hideUI(window: Window) {
+    window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            )
+}
+
 @Composable
-fun ChatsContainer(owner: ComponentActivity) {
+fun ChatsContainer(owner: ComponentActivity, viewModel: ProfileViewModel) {
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -78,6 +97,12 @@ fun ChatsContainer(owner: ComponentActivity) {
                 .background(Color.White)
                 .padding(0.dp, 5.dp)
         ) {
+            var avatar by remember { mutableStateOf("") }
+            var name by remember { mutableStateOf("")}
+            viewModel.getUserDataLocal().observe(owner) { profileData ->
+                avatar = profileData?.avatar ?: ""
+                name = profileData?.name ?: "profile name"
+            }
             Image(
                 painter = painterResource(id = R.drawable.kyrgyzstan),//rememberAsyncImagePainter(profileData?.avatar),
                 contentDescription = "avatar",
@@ -105,7 +130,7 @@ fun ChatsContainer(owner: ComponentActivity) {
                     disabledContentColor = Color.Transparent
                 )
             ) {
-                Text(text = "My name", color = Color.Black)
+                Text(text = name, color = Color.Black)
             }
             Spacer(
                 modifier = Modifier
@@ -127,7 +152,10 @@ fun ChatsContainer(owner: ComponentActivity) {
             }
         }
 
-        Spacer(modifier = Modifier.fillMaxHeight().background(Color.Black).width(1.dp))
+        Spacer(modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.Black)
+            .width(1.dp))
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -2,7 +2,10 @@ package ru.kvs.mangomsngr.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -61,12 +64,23 @@ class AuthActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE or
+                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                )
+        //Я бы использовал вариации window.insetsController?.hide(WindowInsets.Type.systemBars()), но у меня 10 андроид
         enableEdgeToEdge()
         setContent {
             MangoMsngrTheme {
                 MainContainer(viewModel, this, countriesLists)
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                return
+            }
+        })
     }
 }
 
@@ -191,7 +205,8 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                                         accessToken = response.accessToken ?: "",
                                         refreshToken = response.refreshToken ?: ""
                                     )
-                                    //TODO() к чатам
+                                    val chatsIntent = Intent(owner, ChatsActivity::class.java)
+                                    owner.startActivity(chatsIntent)
                                 } else {
                                     val regIntent = Intent(owner, RegistrationActivity::class.java)
                                     regIntent.putExtra("phoneNumber", phoneNumber)

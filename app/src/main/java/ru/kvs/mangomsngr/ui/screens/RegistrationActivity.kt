@@ -2,6 +2,7 @@ package ru.kvs.mangomsngr.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,7 +32,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.EnterViewModel
@@ -53,7 +53,6 @@ class RegistrationActivity : ComponentActivity() {
     }
 }
 
-//@Preview
 @Composable
 fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel) {
     Column(
@@ -123,12 +122,20 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
             onClick = {
                 if(isUsernameLegit && username.isNotEmpty() && name.isNotEmpty()) {
                     viewModel.registerNewUser(phoneNumber = phoneNumber, name = name, username = username).observe(owner) { response ->
-                        viewModel.saveTokens(
-                            accessToken = response.accessToken ?: "",
-                            refreshToken = response.refreshToken ?: ""
-                        )
-                        val chatIntent = Intent(owner, ChatsActivity::class.java)
-                        owner.startActivity(chatIntent)
+                        if (response == null) {
+                            Toast.makeText(
+                                owner,
+                                "Error trying register new user.",
+                                Toast.LENGTH_LONG)
+                                .show()
+                        } else {
+                            viewModel.saveTokens(
+                                accessToken = response.accessToken ?: "",
+                                refreshToken = response.refreshToken ?: ""
+                            )
+                            val chatIntent = Intent(owner, ChatsActivity::class.java)
+                            owner.startActivity(chatIntent)
+                        }
                     }
                 }
             },

@@ -20,28 +20,22 @@ class UserRemoteData @Inject constructor(private val service: UserService) {
         return service.sendAuthCode(body = phoneNumberForCode)
     }
 
-
     suspend fun checkAuth(phoneNumberWithCode: CheckAuthBody) =
         service.checkAuthCode(body = phoneNumberWithCode)
 
     suspend fun registerNewUser(registerInfo: RegistrationBody) =
         service.registerNewUser(body = registerInfo)
 
-    suspend fun getUserProfile(): Response<Profile> {
-        val userToken = "-" //TODO() вынуть токен из бд и дешифровать
-        return service.getUserData(accessToken = userToken)
+    suspend fun getUserProfile(accessToken: String): Response<Profile> {
+        return service.getUserData(accessToken = accessToken)
     }
 
-    suspend fun changeUserProfile(dataToRefresh: ProfileToChangeBody): Response<ProfileChangedResponse> {
-        val userToken = "-" //TODO() вынуть токен из бд и дешифровать
-        return service.changeUserData(accessToken = userToken, body = dataToRefresh)
+    suspend fun changeUserProfile(accessToken: String, dataToRefresh: ProfileToChangeBody): Response<ProfileChangedResponse> {
+        return service.changeUserData(accessToken = accessToken, body = dataToRefresh)
     }
 
-    suspend fun refreshAccessToken(): Response<RefreshedToken> {
-        val userToken = "-" //TODO() вынуть токен из бд и дешифровать
-        val refreshToken = "-" //TODO() вынуть токен из бд и дешифровать
+    suspend fun refreshAccessToken(refreshToken: String): Response<RefreshedToken> {
         return service.refreshToken(
-            accessToken = userToken,
             body = RefreshToken(refreshToken = refreshToken)
         )
     }

@@ -48,7 +48,6 @@ interface UserService {
 
     @POST("api/v1/users/refresh-token/")
     suspend fun refreshToken(
-        @Header("Authorization") accessToken: String,
         @Body body: RefreshToken
     ): Response<RefreshedToken>
 

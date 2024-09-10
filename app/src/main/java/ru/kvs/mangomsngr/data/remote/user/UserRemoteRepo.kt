@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepo @Inject constructor(private val userRemoteData: UserRemoteData) {
+class UserRemoteRepo @Inject constructor(private val userRemoteData: UserRemoteData) {
 
     suspend fun sendAuth(phoneNumberForCode: SendAuthBody) =
         userRemoteData.sendAuth(phoneNumberForCode = phoneNumberForCode)
@@ -19,14 +19,16 @@ class UserRepo @Inject constructor(private val userRemoteData: UserRemoteData) {
     suspend fun registerNewUser(registerInfo: RegistrationBody) =
         userRemoteData.registerNewUser(registerInfo = registerInfo)
 
-    suspend fun getUserData() =
-        userRemoteData.getUserProfile()
+    suspend fun getUserData(accessToken: String) =
+        userRemoteData.getUserProfile(accessToken)
 
-    suspend fun changeUserData(dataToRefresh: ProfileToChangeBody) =
-        userRemoteData.changeUserProfile(dataToRefresh = dataToRefresh)
+    suspend fun changeUserData(dataToRefresh: ProfileToChangeBody, accessToken: String) =
+        userRemoteData.changeUserProfile(accessToken = accessToken, dataToRefresh = dataToRefresh)
 
-    suspend fun refreshToken() = userRemoteData.refreshAccessToken()
+    suspend fun refreshToken(refreshToken: String)
+        = userRemoteData.refreshAccessToken(refreshToken)
 
-    suspend fun checkJwt() = userRemoteData.checkJwt()
+    suspend fun checkJwt()
+        = userRemoteData.checkJwt()
 
 }

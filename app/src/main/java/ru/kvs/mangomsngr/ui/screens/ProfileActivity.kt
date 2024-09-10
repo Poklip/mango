@@ -44,7 +44,7 @@ import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.ProfileViewModel
 
 @AndroidEntryPoint
-class ProfileActivity: ComponentActivity() {
+class ProfileActivity: ComponentActivity()  {
 
     private val viewModel by viewModels<ProfileViewModel>()
 
@@ -69,17 +69,11 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var profileData by rememberSaveable { mutableStateOf<ProfileData?>(null) }
+        var profileData: ProfileData? = null
         viewModel.getUserDataLocal().observe(owner) { response ->
             profileData = response
         }
-        IconButton(onClick = {
-            val intent = Intent(owner, EditProfileActivity::class.java)
-            owner.startActivity(intent)
-        }) {
-            Icon(painterResource(R.drawable.baseline_edit_24), contentDescription = "edit button")
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Image(
             painter = rememberAsyncImagePainter(profileData?.avatar),
@@ -96,11 +90,12 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth(0.5f)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color.LightGray)
+                .fillMaxWidth(0.5f)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
+                .height(24.dp)
         ) {
             Icon(
                 painterResource(getZodiac(profileData?.birthday)?.image ?: R.drawable.ic_launcher_foreground),
@@ -120,6 +115,14 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 .fillMaxWidth(0.5f)
                 .padding(5.dp)
         )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        IconButton(onClick = {
+            val intent = Intent(owner, EditProfileActivity::class.java)
+            owner.startActivity(intent)
+        }) {
+            Icon(painterResource(R.drawable.baseline_edit_24), contentDescription = "edit button")
+        }
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(

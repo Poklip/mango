@@ -1,5 +1,6 @@
 package ru.kvs.mangomsngr.data.local.user
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.kvs.mangomsngr.data.local.entities.TokensEntity
@@ -10,7 +11,7 @@ class UserLocalRepo @Inject constructor(private val userTableDao: UserTableDao, 
 
     suspend fun saveTokens(accessToken: String, refreshToken: String) {
         withContext(Dispatchers.IO) {
-            tokensTableDao.saveProfile(TokensEntity(accessToken = accessToken, refreshToken = refreshToken))
+            tokensTableDao.saveTokens(TokensEntity(accessToken = accessToken, refreshToken = refreshToken))
         }
     }
 
@@ -33,6 +34,7 @@ class UserLocalRepo @Inject constructor(private val userTableDao: UserTableDao, 
     }
 
     suspend fun saveProfile(profile: ProfileData) {
+        Log.i("KVS_DEBUG", "profile saved: $profile")
         withContext(Dispatchers.IO) {
             userTableDao.saveProfile(profile.toEntity())
         }
@@ -44,9 +46,22 @@ class UserLocalRepo @Inject constructor(private val userTableDao: UserTableDao, 
         }
     }
 
-    suspend fun deleteProfile(userId: Int) {
+    suspend fun updateProfile(profile: ProfileData) {
         withContext(Dispatchers.IO) {
-            userTableDao.deleteProfile(userId)
+            userTableDao.updateProfile(
+                name = profile.name,
+                birthday = profile.birthday,
+                city = profile.city,
+                vk = profile.vk,
+                instagram = profile.instagram,
+                status = profile.status
+            )
+        }
+    }
+
+    suspend fun deleteProfile() {
+        withContext(Dispatchers.IO) {
+            userTableDao.deleteProfile()
         }
     }
 }

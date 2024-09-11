@@ -47,7 +47,7 @@ class EnterViewModel @Inject constructor(private val remoteRepo: UserRemoteRepo,
     fun registerNewUser(
         phoneNumber: String,
         name: String,
-        username: String
+        username: String,
     ): LiveData<RegistrationResponse?> {
 
         return liveData {
@@ -62,12 +62,13 @@ class EnterViewModel @Inject constructor(private val remoteRepo: UserRemoteRepo,
             if (registerResponse.code() != 201) {
                 emit(null)
             }
+            localRepo.deleteProfile()
             localRepo.saveProfile(ProfileData(
                 name = name,
                 username = username,
                 phoneNumber = phoneNumber,
                 isOnline = true,
-                userId = 1//TODO() хардкод, user id не приходил
+                userId = registerResponse.body()?.userid ?: throw NullPointerException("no user id in response")
             ))
             registerResponse.body()?.let { emit(it) }
         }

@@ -74,13 +74,25 @@ data class ProfileData(
     fun getThisField(field: String) : String? {
         return when(field) {
             "name" -> this.name
-            "birthday" -> this.birthday
+            "birthday" -> {
+                if (this.birthday?.length == 8) {
+                    return StringBuilder()
+                        .append(this.birthday.substring(0, 2))
+                        .append(".")
+                        .append(this.birthday.substring(2, 4))
+                        .append(".")
+                        .append(this.birthday.substring(4, 8))
+                        .toString()
+                } else {
+                    null
+                }
+            }
             "city" -> this.city
             "vk" -> this.vk
             "instagram" -> this.instagram
             "status" -> this.status
             "username" -> this.username
-            "phoneNumber" -> this.phoneNumber
+            "phoneNumber" -> "+" + this.phoneNumber
             else -> null
         }
     }

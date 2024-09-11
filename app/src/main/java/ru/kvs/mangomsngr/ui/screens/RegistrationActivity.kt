@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
+import ru.kvs.mangomsngr.ui.theme.LightGrayBrighter
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.EnterViewModel
 
@@ -50,6 +52,11 @@ class RegistrationActivity : ComponentActivity() {
                 Container(extras, this, viewModel)
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                return
+            }
+        })
     }
 }
 
@@ -72,8 +79,8 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
 
         TextField(
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.LightGray,
-                unfocusedContainerColor = Color.LightGray,
+                focusedContainerColor = LightGrayBrighter,
+                unfocusedContainerColor = LightGrayBrighter,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
@@ -84,11 +91,11 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
                     name = newName
                 }
             },
-            placeholder = {Text(text = "enter name")},
+            placeholder = { Text(text = "enter name") },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .height(50.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = true,
@@ -97,8 +104,8 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
 
         TextField(
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.LightGray,
-                unfocusedContainerColor = Color.LightGray,
+                focusedContainerColor = LightGrayBrighter,
+                unfocusedContainerColor = LightGrayBrighter,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
@@ -108,11 +115,11 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
                 isUsernameLegit = newUsername.contains(Regex("[a-zA-Z0-9-_]"))
                 username = newUsername
             },
-            placeholder = {Text(text = "enter username")},
+            placeholder = { Text(text = "enter username") },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .height(50.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = true,
@@ -120,14 +127,14 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
         Spacer(modifier = Modifier.height(5.dp))
         Button(
             onClick = {
-                if(isUsernameLegit && username.isNotEmpty() && name.isNotEmpty()) {
-                    viewModel.registerNewUser(phoneNumber = phoneNumber, name = name, username = username).observe(owner) { response ->
+                if (isUsernameLegit && username.isNotEmpty() && name.isNotEmpty()) {
+                    viewModel.registerNewUser(
+                        phoneNumber = phoneNumber,
+                        name = name,
+                        username = username
+                    ).observe(owner) { response ->
                         if (response == null) {
-                            Toast.makeText(
-                                owner,
-                                "Error trying register new user.",
-                                Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(owner, "Error trying register new user.", Toast.LENGTH_LONG).show()
                         } else {
                             viewModel.saveTokens(
                                 accessToken = response.accessToken ?: "",
@@ -140,7 +147,7 @@ fun Container(data: Bundle?, owner: ComponentActivity, viewModel: EnterViewModel
                 }
             },
             colors = ButtonColors(
-                containerColor = Color.LightGray,
+                containerColor = LightGrayBrighter,
                 contentColor = Color.Black,
                 disabledContainerColor = Color.Transparent,
                 disabledContentColor = Color.Transparent

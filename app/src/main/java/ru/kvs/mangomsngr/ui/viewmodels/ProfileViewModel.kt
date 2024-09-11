@@ -76,10 +76,10 @@ class ProfileViewModel @Inject constructor(private val remoteRepo: UserRemoteRep
         }
     }
 
-    fun saveUserData(profileData: ProfileData?) {
+    fun updateUserData(profileData: ProfileData?) {
         if (profileData == null) return
         dbScope.launch {
-            localRepo.saveProfile(profileData)
+            localRepo.updateProfile(profileData)
         }
     }
 }

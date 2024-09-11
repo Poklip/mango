@@ -16,7 +16,23 @@ interface UserTableDao {
     @Query("SELECT * FROM user_profile;")
     fun getProfile(): ProfileEntity?
 
-    @Query("DELETE FROM user_profile WHERE id = :userId;")
-    fun deleteProfile(userId: Int)
+    @Query("DELETE FROM user_profile;")
+    fun deleteProfile()
+
+    @Query("UPDATE user_profile " +
+            "SET name = :name, " +
+            "birthday = :birthday, " +
+            "city = :city, " +
+            "vk = :vk, " +
+            "instagram = :instagram, " +
+            "status = :status;")
+    fun updateProfile(
+        name: String?,
+        birthday: String?,
+        city: String?,
+        vk: String?,
+        instagram: String?,
+        status: String?,
+    )
 
 }

@@ -2,6 +2,7 @@ package ru.kvs.mangomsngr.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,7 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,12 +36,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.R
 import ru.kvs.mangomsngr.data.getZodiac
 import ru.kvs.mangomsngr.models.user.ProfileData
+import ru.kvs.mangomsngr.ui.theme.LightGrayBrighter
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
+import ru.kvs.mangomsngr.ui.theme.RedSoft
 import ru.kvs.mangomsngr.ui.viewmodels.ProfileViewModel
 
 @AndroidEntryPoint
@@ -69,14 +71,14 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var profileData: ProfileData? = null
+        var profileData by remember { mutableStateOf<ProfileData?>(null) }
         viewModel.getUserDataLocal().observe(owner) { response ->
             profileData = response
         }
         Spacer(modifier = Modifier.height(20.dp))
 
         Image(
-            painter = rememberAsyncImagePainter(profileData?.avatar),
+            painter = painterResource(id = R.drawable.profile_placeholder),
             contentDescription = "avatar",
             modifier = Modifier.size(128.dp)
         )
@@ -91,7 +93,7 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .fillMaxWidth(0.5f)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                 .padding(10.dp, 2.dp, 10.dp, 2.dp)
@@ -111,9 +113,10 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
         Text(
             text = profileData?.status.toString(), modifier = Modifier
                 .clip(shape = RoundedCornerShape(5.dp))
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .fillMaxWidth(0.5f)
                 .padding(5.dp)
+                .height(200.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -131,23 +134,24 @@ fun Container(viewModel: ProfileViewModel, owner: ComponentActivity) {
                 owner.startActivity(intent)
             },
             colors = ButtonColors(
-                containerColor = Color.Red,
-                contentColor = Color.Red,
-                disabledContainerColor = Color.Red,
-                disabledContentColor = Color.Red
+                containerColor = RedSoft,
+                contentColor = Color.Black,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.Transparent
             )
         ) {
-            Text(text = "Back", color = Color.White)
+            Text(text = "Back")
         }
     }
 }
 
 @Composable
 fun Field(fieldName: String, profileData: ProfileData?) {
+    Log.d("KVS_DEBUG", profileData?.getThisField(fieldName).toString())
     Text(
         text = profileData?.getThisField(fieldName) ?: fieldName, modifier = Modifier
             .clip(shape = RoundedCornerShape(20.dp))
-            .background(Color.LightGray)
+            .background(LightGrayBrighter)
             .fillMaxWidth(0.5f)
             .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
             .padding(10.dp, 2.dp, 10.dp, 2.dp)

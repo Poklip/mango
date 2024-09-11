@@ -17,12 +17,11 @@ enum class Zodiac(val image: Int, val dates: Pair<Int, Int>) {
     SeaGoat(R.drawable.sea_goat, 1223 to 120)
 }
 
-fun getZodiac(birthday: String?) : Zodiac? {
+fun getZodiac(birthday: String?): Zodiac? {
     if (birthday.isNullOrEmpty()) return null
     val dateAsInteger = try {
         birthday
-            .substringBeforeLast('.')
-            .replace(".", "")
+            .substring(0, 4)
             .toInt()
     } catch (e: NumberFormatException) {
         return null

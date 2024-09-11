@@ -2,6 +2,7 @@ package ru.kvs.mangomsngr.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils.substring
 import android.view.View
 import android.view.WindowInsets
 import androidx.activity.ComponentActivity
@@ -46,6 +47,8 @@ import androidx.core.text.isDigitsOnly
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.data.Countries
 import ru.kvs.mangomsngr.ext.MaskVisualTransformation
+import ru.kvs.mangomsngr.ui.theme.GreyGreenBrighter
+import ru.kvs.mangomsngr.ui.theme.LightGrayBrighter
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.EnterViewModel
 
@@ -78,7 +81,7 @@ class AuthActivity : ComponentActivity() {
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                return
+                finish()
             }
         })
     }
@@ -103,7 +106,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                 .height(50.dp)
         ) {
@@ -130,8 +133,8 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
             }
             TextField(
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray,
-                    unfocusedContainerColor = Color.LightGray,
+                    focusedContainerColor = LightGrayBrighter,
+                    unfocusedContainerColor = LightGrayBrighter,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
@@ -139,12 +142,18 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                 value = phoneNumber,
                 placeholder = { Text(text = chosenCountry.phoneNumberMask) },
                 onValueChange = { enteredValue ->
-                    phoneNumber = enteredValue.filter { it.isDigit() || it.code == 43 }
+                    phoneNumber = enteredValue
+                        .filter { it.isDigit() || it.code == 43 }
+                    phoneNumber = try {
+                        phoneNumber.substring(0, chosenCountry.phoneNumberMask.count { it == '_' })
+                    } catch (_: StringIndexOutOfBoundsException) {
+                        phoneNumber
+                    }
                     chosenCountry =
                         countries.firstOrNull { country -> country.phoneNumberCode == enteredValue }
                             ?: chosenCountry
                 },
-                modifier = Modifier.background(Color.LightGray),
+                modifier = Modifier.background(LightGrayBrighter),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 visualTransformation = MaskVisualTransformation(mask = chosenCountry.phoneNumberMask),
                 readOnly = isWaitingForCode
@@ -155,8 +164,8 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
         if (isWaitingForCode) {
             TextField(
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray,
-                    unfocusedContainerColor = Color.LightGray,
+                    focusedContainerColor = LightGrayBrighter,
+                    unfocusedContainerColor = LightGrayBrighter,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
@@ -168,7 +177,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                 modifier = Modifier
                     .fillMaxWidth(0.19f)
                     .clip(shape = RoundedCornerShape(20.dp))
-                    .background(Color.LightGray)
+                    .background(LightGrayBrighter)
                     .border(1.dp, Color.Black, shape = RoundedCornerShape(20.dp))
                     .height(50.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
@@ -185,7 +194,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                 }
             },
             colors = ButtonColors(
-                containerColor = Color.LightGray,
+                containerColor = LightGrayBrighter,
                 contentColor = Color.Black,
                 disabledContainerColor = Color.Transparent,
                 disabledContentColor = Color.Transparent
@@ -216,7 +225,7 @@ fun MainContainer(viewModel: EnterViewModel, owner: ComponentActivity, countries
                     }
                 },
                 colors = ButtonColors(
-                    containerColor = Color.LightGray,
+                    containerColor = GreyGreenBrighter,
                     contentColor = Color.Black,
                     disabledContainerColor = Color.Transparent,
                     disabledContentColor = Color.Transparent,

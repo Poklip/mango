@@ -1,9 +1,12 @@
 package ru.kvs.mangomsngr.ui.screens
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.view.Window
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
@@ -45,11 +48,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import ru.kvs.mangomsngr.R
 import ru.kvs.mangomsngr.ui.theme.GreyGreen
+import ru.kvs.mangomsngr.ui.theme.LightGrayBrighter
 import ru.kvs.mangomsngr.ui.theme.MangoMsngrTheme
 import ru.kvs.mangomsngr.ui.viewmodels.ProfileViewModel
+
 
 @AndroidEntryPoint
 class ChatsActivity : ComponentActivity() {
@@ -65,13 +71,25 @@ class ChatsActivity : ComponentActivity() {
                 ChatsContainer(this, viewModel)
             }
         }
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                hideUI(window)
                 return
             }
         })
+
     }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val focus = currentFocus
+            val service = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            service.hideSoftInputFromWindow(focus?.windowToken, 0)
+            hideUI(window)
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
 }
 
 private fun hideUI(window: Window) {
@@ -104,13 +122,13 @@ fun ChatsContainer(owner: ComponentActivity, viewModel: ProfileViewModel) {
                 name = profileData?.name ?: "profile name"
             }
             Image(
-                painter = painterResource(id = R.drawable.kyrgyzstan),//rememberAsyncImagePainter(profileData?.avatar),
+                painter = if (avatar.isEmpty()) painterResource(id = R.drawable.profile_placeholder) else rememberAsyncImagePainter(avatar),
                 contentDescription = "avatar",
                 modifier = Modifier
                     .size(96.dp)
                     .clip(shape = RoundedCornerShape(64.dp))
                     .border(1.dp, Color.Black, shape = RoundedCornerShape(64.dp))
-                    .background(Color.LightGray)
+                    .background(LightGrayBrighter)
             )
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(
@@ -163,7 +181,7 @@ fun ChatsContainer(owner: ComponentActivity, viewModel: ProfileViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(Color.LightGray)
+                .background(LightGrayBrighter)
                 .padding(4.dp),
         ) {
             var messageToSend by rememberSaveable { mutableStateOf("") }

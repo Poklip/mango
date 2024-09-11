@@ -10,7 +10,7 @@ import ru.kvs.mangomsngr.data.local.entities.TokensEntity
 interface TokensTableDao {
 
     @Insert(entity = TokensEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    fun saveProfile(tokensEntity: TokensEntity)
+    fun saveTokens(tokensEntity: TokensEntity)
 
     @Query("SELECT access_token FROM user_tokens;")
     fun getAccessToken(): String?

@@ -16,7 +16,7 @@
         android:theme="@style/Theme.MangoMsngr"
         tools:targetApi="31">
         <activity
-            android:name=".AuthActivity"
+            android:name=".ui.screens.AuthActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MangoMsngr">
@@ -25,6 +25,26 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.screens.RegistrationActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.ProfileActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.EditProfileActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.screens.ChatsActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:exported="true">
         </activity>
     </application>
 
